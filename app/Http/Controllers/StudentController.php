@@ -20,16 +20,21 @@ class StudentController extends Controller
 
     public function table(Request $request)
     {
-//        sleep(5);
-        $name = $request->input('name');
-        $students = Student::when($name, function ($query) use ($name) {
-//            $query->where('name', 'LIKE', '%'.$name.'%');
-//            $query->where('name', 'LIKE', '%$name%');
-            $query->where('name', 'LIKE', "%$name%");
-        })->paginate();
+//        dd(\request()->input('page'));
+        $students = Student::query();
+//        if($request->input('name')){
+//            $name = $request->input('name');
+//            $students->where('name', 'LIKE', "%$name%");
+//        }
+
+
+        $students->when($request->input('name'), function ($query, $xName) {
+            $query->where('name', 'LIKE', "%$xName%");
+        });
+
         return view('students.table', [
-            'students' => $students,
-            'name' => $name
+            'students' => $students->paginate(),
+            'name' => $request->input('name')
         ]);
     }
 
@@ -105,6 +110,6 @@ class StudentController extends Controller
     public function destroy(Student $student)
     {
         $student->delete();
-        return back()->with('success', 'deleted successfully');
+        return $student;
     }
 }

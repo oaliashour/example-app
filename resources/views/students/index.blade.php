@@ -30,7 +30,7 @@
                 <th></th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="x-tbody">
 
             </tbody>
         </table>
@@ -43,50 +43,65 @@
     <script src="http://malsup.github.io/jquery.blockUI.js"></script>
     <script>
         $(document).ready(function () {
+
             loadPage();
 
+            //
+            // $('[name="id"]').each(function (el, i){
+            //     $(this).closest('form').find('button').on('click', function(){
+            //
+            //     })
+            // });
+
 
         });
 
-        $(document).on('input', '[name=name]', function (event) {
-            event.preventDefault();
-            const name = $(this).val()
-            loadPage({
-                name: name,
-                page: 1
-            });
-        })
-        $(document).on('click', '[role="navigation"] a', function (event) {
-            event.preventDefault();
-
-            const urlParts = $(this).attr('href').split('?');
-            const urlParams = new URLSearchParams(urlParts[1]);
-            const params = Object.fromEntries(urlParams); // {abc: "foo", def: "[asf]", xyz: "5"}
-            loadPage(params);
+        $(document).on('input', '[name="name"]', function (event) {
+            const name = $(this).val();
+            loadPage(null, name);
         });
+        $(document).on('click', '.btn-delete', function (event) {
+            event.preventDefault();
+            const form = $(this).closest('form');
+            const action = form.attr('action');
+            const $tr = $(this).closest('tr');
 
-
-        function loadPage(mParams) {
-            const serializedParams = $.param(mParams);
-            debugger;
             $.ajax({
-                url: '{{ route('students.table') }}' + '?' + serializedParams,
-                //url: '{{ route('students.table') }}' + '?page=' + page + '&name=' + name,
-                data: {},
-                beforeSend: function () {
-                    $('body').block({
-                        message: '<h1>Processing</h1>',
-                        css: {border: '3px solid #a00'}
-                    });
-                },
-                success: function (result) {
-                    $('#table-container tbody').html(result);
-                },
-                complete: function () {
-                    $('body').unblock();
+                url: action,
+                data: form.serialize(),
+                type: 'DELETE',
+                success: function () {
+                    $tr.hide(1000, function () {
+                        $(this).remove();
+                    })
+
                 }
             });
+        });
+        $(document).on('click', '#pagination a', function (event) {
 
+            event.preventDefault();
+            const url = $(this).attr('href');
+            loadPage(url);
+        });
+
+
+        function loadPage(xUrl, name = '') {
+            const initUrl = "{{ route('students.table') }}" + '?name=' + name
+            $.ajax({
+                url: xUrl ?? initUrl,
+                success: function (result) {
+
+                    $('#x-tbody').html(result);
+
+
+                    // $('#pagination a').click(function (event) {
+                    //     debugger;
+                    // });
+                }
+            });
         }
+
+
     </script>
 </x-app-layout>

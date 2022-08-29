@@ -27,5 +27,7 @@ Route::get('/students', [\App\Http\Controllers\StudentController::class,'index']
 Route::get('/student', [\App\Http\Controllers\StudentController::class,'create']);
 Route::get('/student/table', [\App\Http\Controllers\StudentController::class,'table'])->name('students.table');
 Route::delete('/student/{student}', [\App\Http\Controllers\StudentController::class,'destroy'])->name('students.delete');
+Route::get('/student/{student}', [\App\Http\Controllers\StudentController::class,'show'])->name('students.show');
+Route::put('/student/{student}', [\App\Http\Controllers\StudentController::class,'update'])->name('students.update');
 Route::get('/student/html-content', [\App\Http\Controllers\StudentController::class,'htmlContent'])->name('students.html-content');
 Route::post('/student', [\App\Http\Controllers\StudentController::class,'store'])->name('students.store');

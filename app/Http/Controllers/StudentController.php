@@ -20,12 +20,9 @@ class StudentController extends Controller
 
     public function table(Request $request)
     {
+
 //        dd(\request()->input('page'));
-        $students = Student::query();
-//        if($request->input('name')){
-//            $name = $request->input('name');
-//            $students->where('name', 'LIKE', "%$name%");
-//        }
+        $students = Student::with('university')->orderByDesc('id');
 
 
         $students->when($request->input('name'), function ($query, $xName) {
@@ -69,7 +66,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        return $student;
     }
 
 
@@ -98,7 +95,8 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
-        //
+        $student->update($request->all());
+        return $student;
     }
 
     /**

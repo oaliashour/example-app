@@ -1,5 +1,11 @@
 @foreach($students as $std)
     <tr>
+        <td>
+            @if($std->profile_image && Storage::disk('public')->exists($std->profile_image))
+                <img src="{{ asset('storage/'.$std->profile_image) }}" alt="" width="100" height="100" class="img-thumbnail">
+
+            @endif
+        </td>
         <td>{{ $std->id }}</td>
         <td>{{ $std->name }}</td>
         <td>{{ $std->address }}</td>

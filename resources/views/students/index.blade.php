@@ -21,6 +21,7 @@
                     <thead>
 
                     <tr>
+                        <th></th>
                         <th>Id</th>
                         <th>name</th>
                         <th>address</th>
@@ -87,6 +88,15 @@
                             <input type="text" class="form-control" name="age">
                         </div>
 
+                        <div class="col-md-12">
+                            <label for="name" class="form-label">Profile image</label>
+                            <input type="file" class="form-control" name="images[]" multiple>
+                        </div>
+                        <div class="col-md-12  mt-3">
+                            <img src="" alt="" id="preview" width="100" height="100" class="img-thumbnail"
+                                 style="display: none">
+                        </div>
+
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -103,6 +113,15 @@
         crossorigin="anonymous"></script>
     <script src="http://malsup.github.io/jquery.blockUI.js"></script>
     <script>
+
+        $(document).on('change', '[name="image"]', function (evt) {
+            const [file] = this.files
+            if (file) {
+                $('#preview')
+                    .attr('src', URL.createObjectURL(file))
+                    .show();
+            }
+        });
         $(document).ready(function () {
 
             loadPage();
@@ -163,26 +182,33 @@
             });
         }
 
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('[name="_token"]').val()
+            }
+        });
 
         $('#std-form').on('submit', function (event) {
             event.preventDefault();
-            const id = $('[name=id]').val();
+            const id = $(this).find('[name=id]').val();
             let url = $(this).attr('action');
-            let method = 'POST';
-
+            let xMethod = 'POST';
 
             if (id) {
                 url = $('[in-editing]').attr('update-url');
-                method = 'PUT';
+                xMethod = 'PUT';
             }
 
-            const data = $(this).serialize();
+            const fd = new FormData(this);
+            fd.append('_method', xMethod)
 
             $.ajax({
                 // url:url,
                 url,
-                method,
-                data,
+                method: 'POST',
+                data: fd,
+                contentType: false,
+                processData: false,
                 success: function (response) {
                     $('#staticBackdrop').modal('hide');
                     if (id) {

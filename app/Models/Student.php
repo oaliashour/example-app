@@ -14,7 +14,8 @@ class Student extends Model
         'address',
         'mobile',
         'birth_date',
-        'age'
+        'age',
+        'profile_image'
     ];
 
     protected $casts = [

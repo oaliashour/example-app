@@ -21,7 +21,6 @@ class StudentController extends Controller
     public function table(Request $request)
     {
 
-//        dd(\request()->input('page'));
         $students = Student::with('university')->orderByDesc('id');
 
 
@@ -53,6 +52,23 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
+//dd($request->all());
+        $images = [];
+        foreach ($request->file('images') as $image) {
+            $path = $request->file('image')->store('/', [
+                'disk' => 'public'
+            ]);
+            $images[] = $path;
+
+        }
+
+        $request->merge([
+            'profile_image' => implode(',',$images),
+        ]);
+
+//        $request->profile_image = $path;
+
+
         $student = Student::create($request->all());
 
         return $student;
@@ -95,6 +111,15 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('/', [
+                'disk' => 'public'
+            ]);
+//dd($path);
+            $request->merge([
+                'profile_image' => $path,
+            ]);
+        }
         $student->update($request->all());
         return $student;
     }
